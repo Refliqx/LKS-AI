@@ -71,7 +71,7 @@ class DecisionTreeClassifier:
         best_threshold = None
         best_feature = None
 
-        for feature in X.columns:
+        for feature in pd.DataFrame.column(X):
             info_gain, threshold = self.__find_best_splitter(X, y, feature)
             if info_gain > best_info_gain:
                 best_info_gain = info_gain
@@ -81,7 +81,9 @@ class DecisionTreeClassifier:
     
     def __build_tree(self, X, y, depth=0):
         if self.__entropy(y) == 0 or len(y) < self.min_samples_split or len(y) < self.min_samples_leaf or depth >= self.max_depth:
-            leaf_node = None
+            count_label = np.bincount(y)
+            majority_label = np.argmax(count_label)
+            leaf_node = majority_label
             return leaf_node
         else:
             feature, threshold = self.__find_best_split(X, y)
@@ -115,15 +117,5 @@ class DecisionTreeClassifier:
 
     def predict(self, X):
         return [self.__predict_one(x) for x in X]
-
-    def accuracy_point(y_test, y_pred):
-        correct_pred = 0
-        total_data = len(y_test)
-
-        for label in y_test:
-            if label == y_pred:
-                correct_pred += 1
-        accuracy = correct_pred / total_data
-        return accuracy
 
 # DONE
